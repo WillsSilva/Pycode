@@ -16,6 +16,7 @@ class Car(models.Model):
     plate = models.CharField(max_length=10,null=True,blank=True)
     value = models.FloatField(blank=True,null=True)
     photo = models.ImageField(upload_to='cars/',null=True,blank=True)
+    bio = models.TextField(blank=True,null=True)
 
 
     def __str__ (self):

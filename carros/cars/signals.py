@@ -1,19 +1,31 @@
-from django.db.models.signals import pre_save, pre_delete, post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
-from cars.models import Car
+from cars.models import Car, CarInventory
+from django.db.models import Sum
+from groq_api.client import get_car_ai_bio
 
-@receiver(pre_save, sender=Car)
-def car_pre_save(sender, instance, **kwargs):
-    print('## pre save##')
-    
+def car_invetory_update():
+    cars_count = Car.objects.all().count()
+    cars_value = Car.objects.aggregate(
+        total_value=Sum('value')
+    )['total_value']
+    CarInventory.objects.create(
+        cars_count=cars_count,
+        cars_value=cars_value
+    )
+
 @receiver(post_save, sender=Car)
 def car_post_save(sender, instance, **kwargs):
-    print('## pre save##')
-
-@receiver(pre_delete, sender=Car)
-def car_pre_delete(sender, instance, **kwargs):
-    print('## pre delete##')
+    car_invetory_update()
     
 @receiver(post_delete, sender=Car)
 def car_post_delete(sender, instance, **kwargs):
-    print('## pre delete##')
+    car_invetory_update()
+
+@receiver(pre_save, sender=Car)
+def car_pre_save(sender, instance, **kwargs):
+    if not instance.bio:
+        ai_bio = get_car_ai_bio(
+            instance.model, instance.brand, instance.model_year
+        )
+        instance.bio = ai_bio
