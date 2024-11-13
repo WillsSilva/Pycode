@@ -11,6 +11,10 @@ def get_car_ai_bio(model, brand, year):
     chat_completion = client.chat.completions.create(
         messages=[
             {
+                "role": "system",
+                "content": "Você é um especialista em carros. Sua função é criar uma descrição técnica sobre o carro informado.",
+            },
+            {
                 "role": "user",
                 "content": prompt,
             }
