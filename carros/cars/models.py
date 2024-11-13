@@ -24,7 +24,7 @@ class Car(models.Model):
     
 class CarInventory(models.Model):
     cars_count = models.IntegerField()
-    cars_value = models.FloatField()
+    cars_value = models.FloatField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     
     class Meta:
